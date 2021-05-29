@@ -1,3 +1,3 @@
-rootProject.name = 'otus_java_2021_03'
-
+rootProject.name = 'otusJava'
+include 'hw1-gradle'
 
