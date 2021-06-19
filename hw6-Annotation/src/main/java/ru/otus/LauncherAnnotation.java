@@ -50,9 +50,7 @@ public class LauncherAnnotation {
             for (Method method : before) {
                 try {
                     method.invoke(instance);
-                    pass++;
                 } catch (Exception e) {
-                    fail++;
                 }
             }
         }
@@ -68,9 +66,7 @@ public class LauncherAnnotation {
             for (Method method : after) {
                 try {
                     method.invoke(instance);
-                    pass++;
                 } catch (Exception e) {
-                    fail++;
                 }
             }
         }
