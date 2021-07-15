@@ -18,6 +18,7 @@ import java.util.TreeMap;
 class AtmTest {
 
     private Atm atm;
+    private Storage storage;
 
     @BeforeEach
     private void setUp() {
@@ -28,7 +29,8 @@ class AtmTest {
         container.put(Banknote.TWO_THOUSAND, 5);
         container.put(Banknote.FIVE_THOUSAND, 5);
 
-        atm = new AtmImpl(container);
+        storage = new Storage(container);
+        atm = new AtmImpl(storage);
     }
 
     @DisplayName("должен принимать банкноты разных номиналов")
@@ -63,7 +65,7 @@ class AtmTest {
     @DisplayName("должен выдавать ошибку если сумму нельзя выдать")
     @Test
     void shouldThrowExceptionIfAmountCannotBeGiven() {
-        assertThatThrownBy(() -> atm.get(1)).isInstanceOf(AtmWithdrawException.class);
+       assertThatThrownBy(() -> atm.get(1)).isInstanceOf(AtmWithdrawException.class);
         assertThatThrownBy(() -> atm.get(50000)).isInstanceOf(AtmWithdrawException.class);
     }
 
