@@ -1,9 +1,8 @@
-package handler;
+package ru.otus.handler;
 
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.otus.handler.ComplexProcessor;
 import ru.otus.listener.Listener;
 import ru.otus.listener.homework.HistoryListener;
 import ru.otus.model.Message;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class ComplexProcessorTest {
@@ -30,10 +28,10 @@ class ComplexProcessorTest {
         var message = new Message.Builder(1L).field7("field7").build();
 
         var processor1 = mock(Processor.class);
-        when(processor1.process(eq(message))).thenReturn(message);
+        when(processor1.process(message)).thenReturn(message);
 
         var processor2 = mock(Processor.class);
-        when(processor2.process(eq(message))).thenReturn(message);
+        when(processor2.process(message)).thenReturn(message);
 
         var processors = List.of(processor1, processor2);
 
@@ -44,8 +42,8 @@ class ComplexProcessorTest {
         var result = complexProcessor.handle(message);
 
         //then
-        verify(processor1, times(1)).process(eq(message));
-        verify(processor2, times(1)).process(eq(message));
+        verify(processor1).process(message);
+        verify(processor2).process(message);
         assertThat(result).isEqualTo(message);
     }
 
@@ -56,10 +54,10 @@ class ComplexProcessorTest {
         var message = new Message.Builder(1L).field8("field8").build();
 
         var processor1 = mock(Processor.class);
-        when(processor1.process(eq(message))).thenThrow(new RuntimeException("Test Exception"));
+        when(processor1.process(message)).thenThrow(new RuntimeException("Test Exception"));
 
         var processor2 = mock(Processor.class);
-        when(processor2.process(eq(message))).thenReturn(message);
+        when(processor2.process(message)).thenReturn(message);
 
         var processors = List.of(processor1, processor2);
 
@@ -71,8 +69,8 @@ class ComplexProcessorTest {
         assertThatExceptionOfType(TestException.class).isThrownBy(() -> complexProcessor.handle(message));
 
         //then
-        verify(processor1, times(1)).process(eq(message));
-        verify(processor2, never()).process(eq(message));
+        verify(processor1, times(1)).process(message);
+        verify(processor2, never()).process(message);
     }
 
     @Test
@@ -94,7 +92,7 @@ class ComplexProcessorTest {
         complexProcessor.handle(message);
 
         //then
-        verify(listener, times(1)).onUpdated(eq(message), eq(message));
+        verify(listener, times(1)).onUpdated(message);
     }
 
     // todo: 3. Сделать процессор, который будет выбрасывать исключение в четную секунду (сделайте тест с гарантированным результатом)
@@ -140,9 +138,10 @@ class ComplexProcessorTest {
         Message newMsg = complexProcessor.handle(oldMsg);
 
         verify(processor, times(1)).process(eq(oldMsg));
-        verify(listener, times(1)).onUpdated(eq(oldMsg), eq(newMsg));
+        verify(listener, times(1)).onUpdated(eq(oldMsg));
 
     }
+
 
     private static class TestException extends RuntimeException {
         public TestException(String message) {

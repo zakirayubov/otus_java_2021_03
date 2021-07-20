@@ -3,25 +3,23 @@ package ru.otus.listener.homework;
 import ru.otus.listener.Listener;
 import ru.otus.model.Message;
 
-import java.time.LocalDateTime;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-public class HistoryListener implements Listener {
+public class HistoryListener implements Listener, HistoryReader {
 
-    private final Deque<Memento> stack = new ArrayDeque<>();
+    private final Map<Long, Message> history = new HashMap<>();
 
     @Override
-    public void onUpdated(Message oldMsg, Message newMsg) {
-        MessageHistory messageHistory = new MessageHistory(oldMsg, newMsg);
-        State state = new State(messageHistory);
-        Memento memento = new Memento(state, LocalDateTime.now());
-        stack.push(memento);
+    public void onUpdated(Message msg) {
+        var copy = Message.copyOf(msg);
+        history.put(msg.getId(), copy);
     }
 
-    public State restoreState() {
-        var memento = stack.pop();
-        System.out.println("createdAt:" + memento.getCreatedAt());
-        return memento.getState();
+
+    @Override
+    public Optional<Message> findMessageById(long id) {
+        return Optional.of(history.get(id));
     }
 }

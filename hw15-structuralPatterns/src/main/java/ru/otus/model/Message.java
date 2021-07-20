@@ -1,5 +1,7 @@
 package ru.otus.model;
 
+import java.util.List;
+
 public class Message {
     private final long id;
     private final String field1;
@@ -33,7 +35,6 @@ public class Message {
         this.field11 = field11;
         this.field12 = field12;
         this.field13 = field13;
-
     }
 
     public long getId() {
@@ -125,9 +126,6 @@ public class Message {
                 ", field8='" + field8 + '\'' +
                 ", field9='" + field9 + '\'' +
                 ", field10='" + field10 + '\'' +
-                ", field11='" + field11 + '\'' +
-                ", field12='" + field12 + '\'' +
-                ", field13=" + field13 +
                 '}';
     }
 
@@ -233,10 +231,15 @@ public class Message {
             return this;
         }
 
-
-
         public Message build() {
             return new Message(id, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, field11, field12, field13);
         }
+    }
+
+    public static Message copyOf(Message instance) {
+        var dataCopy = List.copyOf(instance.getField13().getData());
+        ObjectForMessage objectCopy = new ObjectForMessage();
+        objectCopy.setData(dataCopy);
+        return instance.toBuilder().field13(objectCopy).build();
     }
 }
