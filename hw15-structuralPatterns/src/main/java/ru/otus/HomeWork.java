@@ -5,6 +5,7 @@ import ru.otus.listener.homework.HistoryListener;
 import ru.otus.model.Message;
 import ru.otus.model.ObjectForMessage;
 import ru.otus.processor.homework.ChangeProcessor;
+import ru.otus.processor.homework.DateTimeProvider;
 import ru.otus.processor.homework.EvenSecondExceptionProcessor;
 
 import java.time.LocalDateTime;
@@ -27,8 +28,10 @@ public class HomeWork {
            из элеменов "to do" создать new ComplexProcessor и обработать сообщение
          */
 
+        var dateTime = new DateTimeProvider(LocalDateTime::now);
+
         var processors = List.of(new ChangeProcessor(),
-                new EvenSecondExceptionProcessor(LocalDateTime::now));
+                new EvenSecondExceptionProcessor(dateTime.getDate()));
 
         var complexProcessor = new ComplexProcessor(processors, (ex) -> System.out.println(ex.getMessage()));
         var listener = new HistoryListener();

@@ -8,6 +8,7 @@ import ru.otus.listener.homework.HistoryListener;
 import ru.otus.model.Message;
 import ru.otus.processor.Processor;
 import ru.otus.processor.homework.ChangeProcessor;
+import ru.otus.processor.homework.DateTimeProvider;
 import ru.otus.processor.homework.EvenSecondExceptionProcessor;
 
 import java.time.LocalDateTime;
@@ -102,8 +103,10 @@ class ComplexProcessorTest {
         //given
         var message = new Message.Builder(1L).build();
 
+        var dataTime = spy(new DateTimeProvider(LocalDateTime::now));
+
         var processor =
-                spy(new EvenSecondExceptionProcessor(() -> LocalDateTime.now().withSecond(2)));
+                spy(new EvenSecondExceptionProcessor(dataTime.getDate().withSecond(2)));
 
         var complexProcessor = new ComplexProcessor(Collections.singletonList(processor), (ex) -> {
             throw new TestException(ex.getMessage());
