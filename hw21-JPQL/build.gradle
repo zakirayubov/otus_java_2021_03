@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = JavaVersion.VERSION_15
+targetCompatibility = JavaVersion.VERSION_15
+
+dependencies {
+    dependencies {
+        implementation("org.hibernate:hibernate-core")
+        implementation 'ch.qos.logback:logback-classic'
+        implementation 'org.flywaydb:flyway-core'
+        implementation 'org.postgresql:postgresql'
+
+        testImplementation("org.testcontainers:junit-jupiter")
+        testImplementation("org.testcontainers:postgresql")
+    }
+}
+
+test {
+}
