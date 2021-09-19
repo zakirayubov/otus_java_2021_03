@@ -7,8 +7,13 @@ import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
+import ru.otus.crm.model.AddressDataSet;
 import ru.otus.crm.model.Client;
+import ru.otus.crm.model.PhoneDataSet;
 import ru.otus.crm.service.DbServiceClientImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DbServiceDemo {
 
@@ -25,19 +30,34 @@ public class DbServiceDemo {
 
         new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
 
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class);
+        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, AddressDataSet.class, PhoneDataSet.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
 ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 ///
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
-        dbServiceClient.saveClient(new Client("dbServiceFirst"));
+        var firstClient = new Client();
+        firstClient.setName("dbServiceFirst");
 
-        var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));
+        var listPhone = new ArrayList<PhoneDataSet>();
+        for (var idx = 0; idx < 5; idx++) {
+            listPhone.add(new PhoneDataSet("+" + idx, firstClient));
+        }
+        firstClient.setPhones(listPhone);
+        firstClient.setAddress(new AddressDataSet("Moscow", firstClient));
+
+        dbServiceClient.saveClient(firstClient);
+
+        var secondClient = new Client("dbServiceSecond");
+        secondClient.setPhones(List.of(new PhoneDataSet("777", secondClient)));
+        secondClient.setAddress(new AddressDataSet("new Adress", secondClient));
+        var clientSecond = dbServiceClient.saveClient(secondClient);
         var clientSecondSelected = dbServiceClient.getClient(clientSecond.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found, id:" + clientSecond.getId()));
         log.info("clientSecondSelected:{}", clientSecondSelected);
+        log.info("phones:{}", clientSecondSelected.getPhones());
+        log.info("address:{}", clientSecondSelected.getAddress());
 ///
         dbServiceClient.saveClient(new Client(clientSecondSelected.getId(), "dbServiceSecondUpdated"));
         var clientUpdated = dbServiceClient.getClient(clientSecondSelected.getId())
