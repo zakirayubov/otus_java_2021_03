@@ -19,6 +19,17 @@ public class DataTemplateHibernate<T> implements DataTemplate<T> {
     }
 
     @Override
+    public Optional<T> findByLogin(Session session, String login) {
+        List<T> resultList = session.createQuery(String.format("from %s WHERE login =\'%s\'", clazz.getSimpleName(), login), clazz).getResultList();
+
+        T t = resultList.stream()
+                .findFirst()
+                .orElse(null);
+        Optional<T> t1 = Optional.ofNullable(t);
+        return t1;
+    }
+
+    @Override
     public List<T> findAll(Session session) {
         return session.createQuery(String.format("from %s", clazz.getSimpleName()), clazz).getResultList();
     }

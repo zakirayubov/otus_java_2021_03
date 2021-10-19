@@ -9,13 +9,13 @@ import ru.otus.crm.model.User;
 import java.util.List;
 import java.util.Optional;
 
-public class DbServiceClientImpl implements DBServiceClient {
-    private static final Logger log = LoggerFactory.getLogger(DbServiceClientImpl.class);
+public class DbServiceUserImpl implements DBServiceClient {
+    private static final Logger log = LoggerFactory.getLogger(DbServiceUserImpl.class);
 
     private final DataTemplate<User> userDataTemplate;
     private final TransactionManager transactionManager;
 
-    public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<User> userDataTemplate) {
+    public DbServiceUserImpl(TransactionManager transactionManager, DataTemplate<User> userDataTemplate) {
         this.transactionManager = transactionManager;
         this.userDataTemplate = userDataTemplate;
     }
@@ -39,6 +39,15 @@ public class DbServiceClientImpl implements DBServiceClient {
     public Optional<User> getUser(long id) {
         return transactionManager.doInTransaction(session -> {
             var userOptional = userDataTemplate.findById(session, id);
+            log.info("user: {}", userOptional);
+            return userOptional;
+        });
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) {
+        return transactionManager.doInTransaction(session -> {
+            var userOptional = userDataTemplate.findByLogin(session, login);
             log.info("user: {}", userOptional);
             return userOptional;
         });

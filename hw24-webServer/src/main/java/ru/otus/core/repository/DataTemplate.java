@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface DataTemplate<T> {
     Optional<T> findById(Session session, long id);
+    Optional<T> findByLogin(Session session, String login);
 
     List<T> findAll(Session session);
 

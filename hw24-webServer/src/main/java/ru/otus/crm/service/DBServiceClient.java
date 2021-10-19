@@ -11,5 +11,7 @@ public interface DBServiceClient {
 
     Optional<User> getUser(long id);
 
+    Optional<User> findByLogin(String login);
+
     List<User> findAll();
 }
