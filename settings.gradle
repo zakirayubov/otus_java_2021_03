@@ -7,3 +7,6 @@ include 'hw10-byteCodes'
 include 'hw12-solid'
 include 'hw21-JPQL'
 
+include 'hw18-jdbc'
+include 'hw18-jdbc:demo'
+
