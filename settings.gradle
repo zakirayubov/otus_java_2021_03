@@ -5,5 +5,6 @@ include 'hw6-Annotation'
 include 'hw8-gc'
 include 'hw10-byteCodes'
 include 'hw12-solid'
+include 'hw15-structuralPatterns'
 include 'hw21-JPQL'
 
