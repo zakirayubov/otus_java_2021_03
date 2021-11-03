@@ -31,7 +31,7 @@ public class HomeWork {
         var dateTime = new DateTimeProvider(LocalDateTime::now);
 
         var processors = List.of(new ChangeProcessor(),
-                new EvenSecondExceptionProcessor(dateTime.getDate()));
+                new EvenSecondExceptionProcessor(LocalDateTime::now));
 
         var complexProcessor = new ComplexProcessor(processors, (ex) -> System.out.println(ex.getMessage()));
         var listener = new HistoryListener();

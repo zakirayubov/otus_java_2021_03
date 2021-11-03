@@ -106,7 +106,7 @@ class ComplexProcessorTest {
         var dataTime = spy(new DateTimeProvider(LocalDateTime::now));
 
         var processor =
-                spy(new EvenSecondExceptionProcessor(dataTime.getDate().withSecond(2)));
+                spy(new EvenSecondExceptionProcessor(() -> LocalDateTime.now().withSecond(2)));
 
         var complexProcessor = new ComplexProcessor(Collections.singletonList(processor), (ex) -> {
             throw new TestException(ex.getMessage());
