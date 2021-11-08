@@ -19,8 +19,10 @@ public final class FileSystemHelper {
 
         if (path == null) {
             System.out.println("Local file not found, looking into resources");
-            path = Optional.ofNullable(FileSystemHelper.class.getClassLoader().getResource(fileOrResourceName))
-                    .orElseThrow(() -> new RuntimeException(String.format("File \"%s\" not found", fileOrResourceName))).toExternalForm();
+            path = Optional
+                .ofNullable(FileSystemHelper.class.getClassLoader().getResource(fileOrResourceName))
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("File \"%s\" not found", fileOrResourceName))).toExternalForm();
 
         }
         return path;

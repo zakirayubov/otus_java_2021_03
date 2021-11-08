@@ -1,22 +1,22 @@
 package ru.otus;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.core.repository.DataTemplateHibernate;
-import ru.otus.core.repository.HibernateUtils;
-import ru.otus.core.sessionmanager.TransactionManagerHibernate;
-import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
-import ru.otus.crm.model.User;
-import ru.otus.crm.service.DbServiceUserImpl;
+import ru.otus.dao.ClientDao;
+import ru.otus.dao.ClientDaoImpl;
+import ru.otus.dao.InMemoryUserDao;
+import ru.otus.dao.UserDao;
+import ru.otus.dbmigrations.MigrationsExecutorFlyway;
+import ru.otus.model.AddressDataSet;
+import ru.otus.model.Client;
+import ru.otus.model.PhoneDataSet;
+import ru.otus.repository.DataTemplateHibernate;
+import ru.otus.repository.HibernateUtils;
 import ru.otus.server.WebServer;
-import ru.otus.server.WebServerWithSecurity;
-import ru.otus.servicies.TemplateProcessor;
-import ru.otus.servicies.TemplateProcessorImpl;
-import ru.otus.servicies.auth.UserAuthService;
-import ru.otus.servicies.auth.UserAuthServiceImpl;
+import ru.otus.server.WebServerWithFilterBasedSecurity;
+import ru.otus.service.*;
+import ru.otus.sessionmanager.TransactionManagerHibernate;
 
 public class Application {
 
@@ -35,21 +35,22 @@ public class Application {
 
         new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
 
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, User.class);
+        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class,
+                AddressDataSet.class, PhoneDataSet.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
+        var clientTemplate = new DataTemplateHibernate<>(Client.class);
+        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
 
-        var userTemplate = new DataTemplateHibernate<>(User.class);
-
-        var dbServiceUser = new DbServiceUserImpl(transactionManager, userTemplate);
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+        UserDao userDao = new InMemoryUserDao();
+        ClientDao clientDao = new ClientDaoImpl(dbServiceClient);
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
-        UserAuthService authService = new UserAuthServiceImpl(dbServiceUser);
+        UserAuthService authService = new UserAuthServiceImpl(userDao);
 
-        WebServer usersWebServer = new WebServerWithSecurity(WEB_SERVER_PORT, dbServiceUser,
-                templateProcessor, gson, authService);
+        WebServer webServer = new WebServerWithFilterBasedSecurity(WEB_SERVER_PORT,
+                authService, templateProcessor, clientDao);
 
-        usersWebServer.start();
-        usersWebServer.join();
+        webServer.start();
+        webServer.join();
     }
 }

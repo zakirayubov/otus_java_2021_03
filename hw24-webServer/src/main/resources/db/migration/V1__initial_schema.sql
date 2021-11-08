@@ -1,15 +1,28 @@
-create sequence hibernate_sequence start with 1 increment by 1;
+-- Для @GeneratedValue(strategy = GenerationType.SEQUENCE)
+-- create sequence if not exists hibernate_sequence start with 1 increment by 1;
 
-create table users
+create table if not exists address
 (
-    id   bigint not null primary key,
-    name varchar(50),
-    login varchar(50) not null,
-    password varchar(50) not null
+    address_id bigserial not null primary key,
+    street varchar(250)
 );
 
+create table if not exists client
+(
+    client_id bigserial not null primary key,
+    name varchar(50),
+    address_id bigint,
+    CONSTRAINT fk_client
+        FOREIGN KEY(address_id)
+            REFERENCES address(address_id)
+);
 
-INSERT INTO users (id, name, login, password)
-VALUES (1, 'OTUS', 'otus', 'otus'),
-       (2, 'MOS', 'mos', 'mos'),
-       (3, 'Max', 'user7', '11111');
+create table if not exists phone
+(
+    phone_id bigserial not null primary key,
+    phone_number varchar(250),
+    client_id bigint,
+    CONSTRAINT fk_client_2
+        FOREIGN KEY(client_id)
+            REFERENCES client(client_id)
+);
